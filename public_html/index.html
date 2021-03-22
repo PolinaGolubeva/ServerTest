@@ -1,0 +1,111 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Parking interface</title>
+    <script type="text/javascript">
+        var ws;
+
+        function init() {
+            ws = new WebSocket("ws://localhost:8081/parking");
+            ws.onopen = function (event) {
+                alert('Connection established');
+            }
+
+            ws.onmessage = function (event) {
+                let msg = event.data;
+                if (msg.startsWith('send|parking|')) {
+                    let parking = msg.replace('send|parking|','');
+                    parseParking(parking);
+                }
+                if (msg.startsWith('err|')) {
+                    alert(msg);
+                }
+            }
+
+            ws.onclose = function (event) {
+                alert('Connection closed');
+            }
+        };
+
+        function sendMessage() {
+            var messageField = document.getElementById("message");
+            var userNameField = document.getElementById("username");
+            var message = userNameField.value + ":" + messageField.value;
+            ws.send(message);
+            messageField.value = '';
+        }
+
+        function sendId() {
+            let idField = document.getElementById("parkingId");
+            let message = 'id|'+idField.value;
+            alert('Id message sent');
+            ws.send(message);
+        }
+
+        function add() {
+            let available = document.getElementById("available").textContent;
+            let capacity = document.getElementById("capacity").textContent;
+            if (available == 0)
+                alert('Cannot add another car: parking is full');
+            else {
+                let idField = document.getElementById("parkingId");
+                let msg = 'add|id|' + idField.value;
+                ws.send(msg);
+                available -= 1;
+                document.getElementById("available").textContent = available;
+            }
+        }
+
+        function remove() {
+            let available = document.getElementById("available").textContent;
+            let capacity = document.getElementById("capacity").textContent;
+            if (available*1 == capacity*1)
+                alert('Cannot remove another car: parking is empty');
+            else {
+                let idField = document.getElementById("parkingId");
+                let msg = 'remove|id|' + idField.value;
+                ws.send(msg);
+                available = available*1+1;
+                document.getElementById("available").textContent = available;
+            }
+        }
+
+        function parseParking(msg) {
+            parking = JSON.parse(msg);
+            document.getElementById("parkId").textContent = parking.id;
+            document.getElementById("coords").textContent =
+                parking.coordinates.latitude + ", " + parking.coordinates.longitude;
+            document.getElementById("info").textContent = parking.info;
+            document.getElementById("capacity").textContent = parking.capacity;
+            document.getElementById("available").textContent = parking.available;
+        }
+    </script>
+</head>
+<body onload="init();">
+<div id="startForm">
+    <form name="parkingStart" action="">
+        <p> Type in parking id: </p>
+        <input type="text" name="parkingField" id="parkingId">
+        <input type="button" name="send" value="Send" onclick="sendId();"/>
+    </form>
+</div>
+<div id="body">
+    <div id="menu">
+        <p> Parking id </p>
+        <div id="parkId"></div>
+        <p>Coordinates: </p>
+        <div id="coords"></div>
+        <p> Info: </p>
+        <div id="info"></div>
+        <p>Capacity: </p>
+        <div id="capacity"></div>
+        <p>Available: </p>
+        <div id="available"></div>
+        <form action="">
+            <input type = "button" id="addButton" onclick = "add();" value = "add car"/>
+            <input type = "button" id="removeButton" onclick = "remove();" value = "remove car"/>
+        </form>
+    </div>
+</div>
+</body>
+</html>
