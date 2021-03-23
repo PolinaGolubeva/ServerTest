@@ -25,7 +25,7 @@ public class ClientWebSocket {
 
     @OnWebSocketConnect
     public void onOpen(Session session) {
-        System.out.println("Connection opened");
+        System.out.println("Connection established");
         clientService.add(this);
         this.session = session;
     }
