@@ -11,6 +11,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -39,6 +41,9 @@ public class ClientWebSocket {
         if (data.startsWith(MessageGenerator.SEND_ORDER)) {
             getOrder(data);
         }
+        if (data.startsWith(MessageGenerator.GET_QR)) {
+            sendQR(data);
+        }
     }
 
     @OnWebSocketClose
@@ -50,7 +55,15 @@ public class ClientWebSocket {
         try {
             session.getRemote().sendString(data);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void sendBinary(byte[] bytes) {
+        try {
+            session.getRemote().sendBytes(ByteBuffer.wrap(bytes));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -67,14 +80,25 @@ public class ClientWebSocket {
         String msg = data.replace(MessageGenerator.SEND_ORDER, "");
         try {
             Order order = Order.fromJson(msg);
-            System.out.println("Order id:" + order.getId());
-            String response = MessageGenerator.MESSAGE + "Order received";
-            System.out.println(response + order.toString());
+            Long oldId = order.getId();
+            String response = MessageGenerator.SEND_ORDER_ID + oldId + "|";
+            System.out.println("Order received: " + order.toString());
             clientService.getOrderDBService().insert(order);
+            Long newId = order.getId();
+            response += newId;
+            clientService.sendMessage(response, this);
         } catch (JsonParseException e) {
             String response = MessageGenerator.ERROR + "Error: order was not received, wrong format";
         } catch (NullPointerException e) {
             String response = MessageGenerator.ERROR + "Error: empty order";
         }
     }
+
+    private void sendQR(String data) {
+        System.out.println("QR-code request: " + data);
+        data = data.replace(MessageGenerator.GET_QR, "");
+        Long id = Long.parseLong(data);
+        clientService.sendQR(id, this);
+    }
+
 }

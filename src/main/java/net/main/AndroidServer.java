@@ -14,6 +14,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 public class AndroidServer implements Runnable {
     private DBService<Parking> parkingDBService;
     private DBService<Order> orderDBService;
+    private Server server;
 
     public AndroidServer(DBService<Parking> parkingDBService, DBService<Order> orderDBService) {
         this.parkingDBService = parkingDBService;
@@ -21,7 +22,7 @@ public class AndroidServer implements Runnable {
     }
 
     public void init() throws Exception {
-        Server server = new Server(8080);
+        server = new Server(8080);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
         context.addServlet(new ServletHolder(new WebSocketClientServlet(this.parkingDBService, this.orderDBService)), "/client");
@@ -34,6 +35,7 @@ public class AndroidServer implements Runnable {
         handlers.setHandlers(new Handler[]{resource_handler, context});
         server.setHandler(handlers);
 
+        server.setStopAtShutdown(true);
         server.start();
         System.out.println("Android server started");
         //server.join();
@@ -46,5 +48,10 @@ public class AndroidServer implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void stop() throws Exception {
+        server.stop();
+        System.out.println("Android server stopped");
     }
 }

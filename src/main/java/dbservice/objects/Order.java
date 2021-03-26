@@ -31,7 +31,9 @@ public class Order {
     public void setId(Long id) throws ModelException {
         if (this.id == null)
             this.id = id;
-        else
+        else if (this.id < 0) {
+            this.id = id;
+        } else
             throw new ModelException("Can't change id of current order");
     }
 
@@ -67,5 +69,17 @@ public class Order {
             System.out.println("Illegal string format");
         }
         return null;
+    }
+
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof Order)) return false;
+        Order order = (Order) o;
+        if (!order.getParkingId().equals(this.parkingId)) return false;
+        if (!order.getCarNumber().equals(this.carNumber)) return false;
+        if (!order.getStart().equals(this.start)) return false;
+        if (!order.getFinish().equals(this.finish)) return false;
+        //if (!order.getPaymentInfo().equals(this.paymentInfo)) return false;
+        return true;
     }
 }

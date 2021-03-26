@@ -76,8 +76,7 @@ public class ParkingDAO {
     public Parking get(long id) throws SQLException, DBException {
         String query = "SELECT * FROM parkings WHERE id=" + id;
         Parking parking = executor.execQuery(query, result -> {
-            if (!result.isLast()) {
-                result.next();
+            if (result.next()) {
                 double latitude = result.getDouble(2);
                 double longitude = result.getDouble(3);
                 String info = result.getString(4);
@@ -104,7 +103,6 @@ public class ParkingDAO {
                 + " and longitude=" + String.format("%.4f",coordinates.getLongitude());
         Long id = executor.execQuery(query, result -> {
             if (result.next()) {
-                result.next();
                 return result.getLong(1);
             }
             return null;
@@ -146,8 +144,8 @@ public class ParkingDAO {
     public Long update(Parking parking) throws SQLException {
         String query = "UPDATE parkings SET capacity=" + parking.getCapacity()
                 + ", available=" + parking.getAvailable()
-                + ", info=" + parking.getInfo()
-                + " WHERE id=" + parking.getId();
+                + ", info='" + parking.getInfo()
+                + "' WHERE id=" + parking.getId();
         executor.execUpdate(query);
         return parking.getId();
     }

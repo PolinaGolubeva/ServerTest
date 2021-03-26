@@ -26,7 +26,7 @@ public class TestParkingService implements DBService<Parking> {
                     random.nextDouble() * 180);
             int capacity = random.nextInt(50) + 50;
             int available = random.nextInt(capacity);
-            Parking parking = new Parking(i, coords, info + i, capacity, available);
+            Parking parking = new Parking((long)i, coords, info + i, capacity, available);
             pList.add(parking);
         }
     }
@@ -39,7 +39,7 @@ public class TestParkingService implements DBService<Parking> {
             manager.updateAll(obj.toString());
             return obj.getId();
         } catch (ModelException e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return null;
     }

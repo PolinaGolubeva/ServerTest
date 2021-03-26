@@ -30,8 +30,8 @@ public class OrderDAO {
                     "(id UNSIGNED PRIMARY KEY AUTOINCREMENT, " +
                     "parking_id UNSIGNED, " +
                     "car_number VARCHAR(10), " +
-                    "start UNSIGNED, " +
-                    "fin UNSIGNED CHECK (fin > start), " +
+                    "startt UNSIGNED, " +
+                    "fin UNSIGNED CHECK (fin > startt), " +
                     "payment_info VARCHAR(256))");
     }
 
@@ -45,12 +45,12 @@ public class OrderDAO {
     public Long insert(Order order) throws SQLException, DBException, ModelException {
         long parkingId = order.getParkingId();
         String carNumber = order.getCarNumber();
-        long start = order.getStart().getTime();
+        long startt = order.getStart().getTime();
         long fin = order.getFinish().getTime();
         String paymentInfo = order.getPaymentInfo();
         executor.execUpdate("INSERT INTO orders VALUES (NULL, " + parkingId + ", '" +
                 carNumber + "', " +
-                start + ", " +
+                startt + ", " +
                 fin + ", '" +
                 paymentInfo + "')");
         try {
@@ -73,7 +73,7 @@ public class OrderDAO {
     public Long getId(Order order) throws SQLException, DBException {
         String query = "SELECT id FROM orders WHERE " +
                 "parking_id='" + order.getParkingId() +
-                "' AND start=" + order.getStart().getTime() +
+                "' AND startt=" + order.getStart().getTime() +
                 " AND fin=" + order.getFinish().getTime();
         Long res =  executor.execQuery(query, result -> {
             if (result.next())
@@ -99,10 +99,10 @@ public class OrderDAO {
                 result.next();
                 long parkingId = result.getLong(2);
                 String carNumber = result.getString(3);
-                long start = result.getLong(4);
+                long startt = result.getLong(4);
                 long fin = result.getLong(5);
                 String paymentInfo = result.getString(6);
-                return new Order(id, parkingId, carNumber, start, fin, paymentInfo);
+                return new Order(id, parkingId, carNumber, startt, fin, paymentInfo);
             } else
                 return null;
         });
@@ -119,10 +119,10 @@ public class OrderDAO {
                         long id = result.getLong(1);
                         long parkingId = result.getLong(2);
                         String carNumber = result.getString(3);
-                        long start = result.getLong(4);
+                        long startt = result.getLong(4);
                         long fin = result.getLong(5);
                         String paymentInfo = result.getString(6);
-                        orderList.add(new Order(id, parkingId, carNumber, start, fin, paymentInfo));
+                        orderList.add(new Order(id, parkingId, carNumber, startt, fin, paymentInfo));
                     }
                     return orderList;
         });
@@ -136,7 +136,7 @@ public class OrderDAO {
     public Long update(Order order) throws SQLException {
         String query = "UPDATE orders SET parking_id=" + order.getParkingId() +
                 ", car_number='" + order.getCarNumber() +
-                "', start=" + order.getStart().getTime() +
+                "', startt=" + order.getStart().getTime() +
                 ", fin=" + order.getStart().getTime() +
                 ", payment_info='" + order.getPaymentInfo() +
                 "' WHERE id=" + order.getId();

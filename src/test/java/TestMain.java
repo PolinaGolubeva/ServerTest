@@ -3,7 +3,7 @@ import dbservice.objects.Parking;
 
 public class TestMain {
     public static void main(String[] args) {
-        Parking parking = new Parking(1, new Coordinates(15, 16), "addr1", 100, 15);
+        Parking parking = new Parking((long)1, new Coordinates(15, 16), "addr1", 100, 15);
         System.out.println(parking.toString());
         String s = parking.toString();
         Parking p2 = Parking.fromJson(s);

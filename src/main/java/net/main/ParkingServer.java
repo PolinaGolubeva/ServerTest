@@ -12,13 +12,14 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 public class ParkingServer implements Runnable {
     private DBService<Parking> parkingDBService;
+    private Server server;
 
     public ParkingServer(DBService<Parking> parkingDBService) {
         this.parkingDBService = parkingDBService;
     }
 
     public void init() throws Exception {
-        Server server = new Server(8081);
+        server = new Server(8081);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
         context.addServlet(new ServletHolder(new WebSocketParkingServlet(this.parkingDBService)), "/parking");
@@ -34,6 +35,7 @@ public class ParkingServer implements Runnable {
         server.start();
         System.out.println("Server started");
         //server.join();
+        server.setStopAtShutdown(true);
     }
 
     @Override
@@ -43,5 +45,12 @@ public class ParkingServer implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void stop() throws Exception {
+        for (Handler handler: server.getHandlers())
+            handler.stop();
+        server.stop();
+        System.out.println("Parking server stopped");
     }
 }

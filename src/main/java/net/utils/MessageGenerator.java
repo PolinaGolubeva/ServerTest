@@ -13,5 +13,6 @@ public class MessageGenerator {
     public static final String ADD_CAR = "add|id|";
     public static final String REMOVE_CAR = "remove|id|";
     public static final String ERROR = "err|";
-
+    public static final String SEND_ORDER_ID = "send|orderId|";
+    public static final String GET_QR = "get|QR|";
 }

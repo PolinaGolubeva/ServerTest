@@ -4,7 +4,6 @@ import dbservice.objects.Order;
 import dbservice.objects.Parking;
 import dbservice.services.DBService;
 import net.notifiers.Listener;
-import net.notifiers.Manager;
 import net.utils.MessageGenerator;
 
 import java.util.Collections;

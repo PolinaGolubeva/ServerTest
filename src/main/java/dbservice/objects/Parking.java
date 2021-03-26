@@ -12,7 +12,7 @@ public class Parking {
     private int capacity;
     private int available;
 
-    public Parking(long id, Coordinates coordinates, String info,
+    public Parking(Long id, Coordinates coordinates, String info,
                    int capacity, int available) {
         this.id = id;
         this.coordinates = coordinates;
@@ -37,6 +37,20 @@ public class Parking {
     public int getCapacity() { return capacity; }
 
     public int getAvailable() { return available; }
+
+    public void addCar() throws ModelException {
+        if (available > 0)
+            available--;
+        else
+            throw new ModelException("Cannot add another car: parking is full");
+    }
+
+    public void removeCar() throws ModelException {
+        if (available < capacity)
+            available++;
+        else
+            throw new ModelException("Cannot remove another car: parking is empty");
+    }
 
     public String toString() {
         Gson gson = new GsonBuilder().serializeNulls().create();
